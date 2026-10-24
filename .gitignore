@@ -1,0 +1,12 @@
+# Dependências (cada um instala com npm install)
+node_modules/
+
+# Arquivos secretos: NUNCA subir para o GitHub
+.env
+
+# Banco de dados local (o script schema.sql cria de novo)
+*.db
+
+# Arquivos gerados pelo sistema
+dist/
+.DS_Store
