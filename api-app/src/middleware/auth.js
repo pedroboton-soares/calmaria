@@ -2,6 +2,7 @@
 // O token é criado no login (routes/auth.js) com o conteúdo { id: id_do_usuario }.
 
 const jwt = require('jsonwebtoken');
+const db = require('../db');
 
 // O que faz: lê o header Authorization ('Bearer <token>'), confere o token
 // e guarda o id do usuário em req.usuarioId para as rotas usarem
@@ -17,6 +18,13 @@ function verificarToken(req, res, next) {
   try {
     // jwt.verify confere a assinatura (com o JWT_SECRET do .env) e a validade
     const dados = jwt.verify(token, process.env.JWT_SECRET);
+
+    // O token pode ser antigo e a conta já ter sido apagada. Nesse caso, não deixa passar
+    const usuario = db.prepare('SELECT id FROM usuarios WHERE id = ?').get(dados.id);
+    if (!usuario) {
+      return res.status(401).json({ erro: 'Conta não encontrada. Faça login novamente.' });
+    }
+
     req.usuarioId = dados.id; // as rotas filtram os dados por este id
     next(); // token certo: segue para a rota
   } catch (e) {
