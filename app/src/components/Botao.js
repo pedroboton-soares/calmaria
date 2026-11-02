@@ -3,8 +3,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useTema } from '../context/TemaContext';
 
-export default function Botao({ titulo, onPress, tipo = 'primario', desabilitado = false }) {
-  const { cores, tamanho } = useTema();
+export default function Botao({ titulo, onPress, tipo = 'primario', desabilitado = false, accessibilityLabel }) {  const { cores, tamanho } = useTema();
   const fundo = tipo === 'perigo' ? cores.erro : tipo === 'secundario' ? cores.cartao : cores.primaria;
   const letra = tipo === 'secundario' ? cores.texto : cores.textoSobrePrimaria;
   return (
@@ -12,7 +11,7 @@ export default function Botao({ titulo, onPress, tipo = 'primario', desabilitado
       onPress={onPress}
       disabled={desabilitado}
       accessibilityRole="button"
-      accessibilityLabel={titulo}
+      accessibilityLabel={accessibilityLabel || titulo}
       accessibilityState={{ disabled: desabilitado }}
       style={[
         estilos.botao,
