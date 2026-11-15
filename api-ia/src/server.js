@@ -1,20 +1,24 @@
-// Servidor da API de IA do Calmaria. Recebe o humor e o texto do app, pede uma
-// reflexão ao Gemini com base nos materiais e devolve a resposta. Não guarda nada.
-// Nesta etapa existem as rotas /saude e /reflexao.
+// Servidor da API de IA do Calmaria. Recebe dados do app, pede uma resposta ao Gemini
+// com base nos materiais e devolve o resultado. Não guarda nada.
+// Rotas: GET /saude, POST /reflexao e POST /resumo-semana.
 
 require('dotenv').config(); // lê o arquivo .env e coloca os valores em process.env
 const express = require('express');
 const cors = require('cors');
 const { textoMateriais } = require('./materiais');
-const { montarInstrucao, temSinalDeCrise, MENSAGEM_CRISE } = require('./prompt');
+const { montarInstrucao, temSinalDeCrise, montarPedidoResumo, MENSAGEM_CRISE } = require('./prompt');
 
 const app = express();
 
 app.use(cors()); // permite que o aplicativo (outro endereço) chame esta API
-app.use(express.json({ limit: '10kb' })); // entende JSON e recusa corpo muito grande
+app.use(express.json({ limit: '50kb' })); // entende JSON e recusa corpo muito grande
 
 // Mesmo limite de texto que o app usa nos registros
 const TAMANHO_MAXIMO_TEXTO = 1000;
+// Quantidade máxima de registros aceitos no resumo da semana
+const MAXIMO_REGISTROS = 20;
+// Formato de data combinado no contrato: AAAA-MM-DD
+const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
 
 // Regras da IA + materiais, montados uma vez só quando o servidor inicia
 const INSTRUCAO = montarInstrucao(textoMateriais);
@@ -78,6 +82,53 @@ async function perguntarComTentativas(instrucao, pergunta) {
   throw ultimoErro;
 }
 
+// O que faz: pede a resposta à IA e envia ao app. Se houver sinal de crise, acrescenta a mensagem do CVV
+async function responderComIA(res, pergunta, crise) {
+  try {
+    let resposta = await perguntarComTentativas(INSTRUCAO, pergunta);
+    if (crise) {
+      resposta = resposta + '\n\n' + MENSAGEM_CRISE; // acrescenta a mensagem fixa com o CVV
+    }
+    res.json({ resposta });
+  } catch (erro) {
+    // O texto do usuário não é gravado no log, por privacidade
+    console.error('Erro ao chamar a IA:', erro.message);
+    if (crise) {
+      // Mesmo que a IA falhe, quem está em crise recebe a mensagem com o CVV
+      return res.json({ resposta: MENSAGEM_CRISE });
+    }
+    res.status(500).json({ erro: 'Não foi possível gerar a resposta agora. Tente de novo em instantes.' });
+  }
+}
+
+// O que faz: confere a lista de registros e devolve a mensagem de erro, ou null se estiver tudo certo
+function validarRegistros(registros) {
+  if (!Array.isArray(registros) || registros.length === 0) {
+    return 'Envie ao menos um registro.';
+  }
+  if (registros.length > MAXIMO_REGISTROS) {
+    return 'Envie no máximo ' + MAXIMO_REGISTROS + ' registros.';
+  }
+  for (const r of registros) {
+    if (!r || typeof r !== 'object') {
+      return 'Cada registro deve ter data, humor e texto.';
+    }
+    if (typeof r.data !== 'string' || !FORMATO_DATA.test(r.data)) {
+      return 'Cada registro precisa de uma data no formato AAAA-MM-DD.';
+    }
+    if (!Number.isInteger(r.humor) || r.humor < 1 || r.humor > 5) {
+      return 'O humor de cada registro deve ser um número inteiro de 1 a 5.';
+    }
+    if (r.texto !== undefined && r.texto !== null && typeof r.texto !== 'string') {
+      return 'O texto de cada registro deve ser uma frase escrita.';
+    }
+    if (r.texto && r.texto.length > TAMANHO_MAXIMO_TEXTO) {
+      return 'O texto de cada registro pode ter no máximo ' + TAMANHO_MAXIMO_TEXTO + ' caracteres.';
+    }
+  }
+  return null;
+}
+
 // Rota simples para testar se a API está no ar
 app.get('/saude', (req, res) => {
   res.json({ ok: true });
@@ -103,23 +154,22 @@ app.post('/reflexao', async (req, res) => {
     'Texto escrito pela pessoa: ' + (textoLimpo || '(a pessoa não escreveu texto)');
 
   // Esta checagem é feita por nós, sem depender da IA
-  const crise = temSinalDeCrise(textoLimpo);
+  await responderComIA(res, pergunta, temSinalDeCrise(textoLimpo));
+});
 
-  try {
-    let resposta = await perguntarComTentativas(INSTRUCAO, pergunta);
-    if (crise) {
-      resposta = resposta + '\n\n' + MENSAGEM_CRISE; // acrescenta a mensagem fixa com o CVV
-    }
-    res.json({ resposta });
-  } catch (erro) {
-    // O texto do usuário não é gravado no log, por privacidade
-    console.error('Erro ao chamar a IA:', erro.message);
-    if (crise) {
-      // Mesmo que a IA falhe, quem está em crise recebe a mensagem com o CVV
-      return res.json({ resposta: MENSAGEM_CRISE });
-    }
-    res.status(500).json({ erro: 'Não foi possível gerar a reflexão agora. Tente de novo em instantes.' });
+// O que faz: recebe { registros: [ { data, humor, texto } ] } e devolve { resposta } com o resumo da semana
+app.post('/resumo-semana', async (req, res) => {
+  const { registros } = req.body || {};
+
+  const mensagemErro = validarRegistros(registros);
+  if (mensagemErro) {
+    return res.status(400).json({ erro: mensagemErro });
   }
+
+  // Junta o texto de todos os registros para procurar sinais de crise em qualquer um deles
+  const todosOsTextos = registros.map((r) => r.texto || '').join(' ');
+
+  await responderComIA(res, montarPedidoResumo(registros), temSinalDeCrise(todosOsTextos));
 });
 
 // Se nenhuma rota combinou, devolve erro 404 no mesmo formato dos outros erros

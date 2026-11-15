@@ -1,5 +1,5 @@
-// Guarda a instrução de sistema (as regras da IA), a mensagem fixa de crise e a função
-// que procura sinais de crise no texto escrito pelo usuário.
+// Guarda a instrução de sistema (as regras da IA), a mensagem fixa de crise, o pedido do
+// resumo da semana e a função que procura sinais de crise no texto escrito pelo usuário.
 
 // Regras que a IA deve seguir em toda resposta
 const INSTRUCAO_SISTEMA =
@@ -52,4 +52,27 @@ function temSinalDeCrise(texto) {
   return SINAIS_DE_CRISE.some((sinal) => limpo.includes(sinal));
 }
 
-module.exports = { montarInstrucao, temSinalDeCrise, MENSAGEM_CRISE };
+// O que faz: monta o pedido do resumo da semana a partir da lista de registros
+function montarPedidoResumo(registros) {
+  // Coloca os registros em ordem de data (a data é texto AAAA-MM-DD, então a ordem do texto funciona)
+  const ordenados = [...registros].sort((a, b) => a.data.localeCompare(b.data));
+
+  // Cada registro vira uma linha: data, humor e texto
+  const linhas = ordenados.map((r) => {
+    const texto = r.texto && r.texto.trim() ? r.texto.trim() : '(sem texto)';
+    return '- ' + r.data + ' | humor ' + r.humor + ' de 5 | ' + texto;
+  });
+
+  return (
+    'Estes são os registros do diário de uma pessoa nos últimos dias. ' +
+    'O humor vai de 1 (muito mal) até 5 (muito bem).\n' +
+    linhas.join('\n') + '\n\n' +
+    'Escreva em português, de forma acolhedora e simples:\n' +
+    '1) Um resumo curto da semana, com no máximo 3 frases, dizendo o que se repetiu ou mudou nos registros.\n' +
+    '2) Uma única sugestão de autocuidado simples, tirada dos materiais, começando com "Sugestão de autocuidado:".\n' +
+    'Não faça diagnóstico, não indique remédios e não faça mais de uma sugestão. ' +
+    'Se os materiais não tiverem uma sugestão adequada, diga que não sabe e sugira conversar com um profissional de saúde.'
+  );
+}
+
+module.exports = { montarInstrucao, temSinalDeCrise, montarPedidoResumo, MENSAGEM_CRISE };
