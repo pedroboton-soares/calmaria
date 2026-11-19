@@ -10,6 +10,10 @@ const { montarInstrucao, temSinalDeCrise, montarPedidoResumo, MENSAGEM_CRISE } =
 
 const app = express();
 
+app.disable('x-powered-by'); // não conta para quem chama que o servidor é Express
+// No Render existe um proxy na frente: isto faz o req.ip ser o IP de quem chamou, e não o do proxy
+app.set('trust proxy', 1);
+
 app.use(cors()); // permite que o aplicativo (outro endereço) chame esta API
 app.use(express.json({ limit: '50kb' })); // entende JSON e recusa corpo muito grande
 
@@ -22,6 +26,38 @@ const FORMATO_DATA = /^\d{4}-\d{2}-\d{2}$/;
 
 // Regras da IA + materiais, montados uma vez só quando o servidor inicia
 const INSTRUCAO = montarInstrucao(textoMateriais);
+
+// Limite de pedidos à IA: cada IP pode fazer até 20 pedidos a cada 10 minutos.
+// Protege a cota gratuita do Gemini contra uso exagerado ou automatizado.
+const LIMITE_PEDIDOS = 20;
+const JANELA_MS = 10 * 60 * 1000;
+const pedidosPorIp = new Map(); // ip -> { inicio, quantidade }
+
+// O que faz: conta os pedidos de cada IP e responde 429 quando passa do limite
+function limitarPedidos(req, res, next) {
+  const agora = Date.now();
+  let contador = pedidosPorIp.get(req.ip);
+  // Primeiro pedido do IP, ou a janela de 10 minutos já acabou: começa a contar de novo
+  if (!contador || agora - contador.inicio > JANELA_MS) {
+    contador = { inicio: agora, quantidade: 0 };
+    pedidosPorIp.set(req.ip, contador);
+  }
+  contador.quantidade++;
+  if (contador.quantidade > LIMITE_PEDIDOS) {
+    return res.status(429).json({ erro: 'Muitos pedidos em pouco tempo. Respire um pouco e tente de novo em alguns minutos.' });
+  }
+  next();
+}
+
+// A cada 10 minutos apaga os contadores vencidos, para a memória não crescer sem parar
+setInterval(() => {
+  const agora = Date.now();
+  for (const [ip, contador] of pedidosPorIp) {
+    if (agora - contador.inicio > JANELA_MS) {
+      pedidosPorIp.delete(ip);
+    }
+  }
+}, JANELA_MS).unref();
 
 // O que faz: manda uma instrução e uma pergunta para o Gemini e devolve o texto da resposta
 async function perguntarAoGemini(instrucao, pergunta) {
@@ -135,7 +171,7 @@ app.get('/saude', (req, res) => {
 });
 
 // O que faz: recebe { humor, texto } e devolve { resposta } com uma reflexão da IA
-app.post('/reflexao', async (req, res) => {
+app.post('/reflexao', limitarPedidos, async (req, res) => {
   const { humor, texto } = req.body || {}; // no Express 5, req.body pode vir vazio (undefined)
 
   if (!Number.isInteger(humor) || humor < 1 || humor > 5) {
@@ -158,7 +194,7 @@ app.post('/reflexao', async (req, res) => {
 });
 
 // O que faz: recebe { registros: [ { data, humor, texto } ] } e devolve { resposta } com o resumo da semana
-app.post('/resumo-semana', async (req, res) => {
+app.post('/resumo-semana', limitarPedidos, async (req, res) => {
   const { registros } = req.body || {};
 
   const mensagemErro = validarRegistros(registros);
