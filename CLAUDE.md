@@ -61,7 +61,7 @@ Uma planta que ganha uma folha por dia de sequência de registros. Tom acolhedor
 - Um dia com pelo menos 1 registro conta. A sequência atual termina hoje, ou ontem se hoje ainda não tem registro (continua viva).
 - Mostrar sequência atual, melhor sequência e dias registrados no mês.
 - Arquivos: `app/src/utils/sequencia.js` (`calcularSequencia(registros)` devolve `{atual, melhor, diasNoMes}`) e `app/src/utils/mensagens.js`.
-- Ligação: ao salvar um registro NOVO, o FormRegistro faz `navigation.navigate('Principal', { screen: 'Inicio', params: { registroSalvo: true } })` e a Home mostra a mensagem.
+- Ligação: ao salvar um registro NOVO, o FormRegistro faz `navigation.popTo('Principal', { screen: 'Inicio', params: { registroSalvo: true, humor } })` (no React Navigation 7 o `navigate` empilharia outro Principal) e a Home mostra a mensagem.
 
 ## Git
 
