@@ -2,13 +2,13 @@
 // Se o usuário está logado, vê as abas e as telas do app. Se não, vê as telas de login e cadastro.
 
 import React from 'react';
-import { ActivityIndicator, View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, View, Text, StatusBar } from 'react-native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { TemaProvider } from './src/context/TemaContext';
+import { TemaProvider, useTema } from './src/context/TemaContext';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 
 import LoginScreen from './src/screens/LoginScreen';
@@ -33,10 +33,20 @@ function icone(emoji) {
   return () => <Text style={{ fontSize: 20 }}>{emoji}</Text>;
 }
 
-// As 4 abas do app logado
+// As 4 abas do app logado (o guia TrackWell aceita até 5 abas, com ícone e rótulo, p. 35)
 function Abas() {
+  const { cores } = useTema();
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: cores.cartao },
+        headerTintColor: cores.texto,
+        tabBarStyle: { backgroundColor: cores.cartao, borderTopColor: cores.borda, minHeight: 60 },
+        tabBarActiveTintColor: cores.primaria,
+        tabBarInactiveTintColor: cores.textoSuave,
+        tabBarLabelStyle: { fontSize: 12 },
+      }}
+    >
       <Tab.Screen name="Inicio" component={HomeScreen}
         options={{ title: 'Início', tabBarIcon: icone('🏠') }} />
       <Tab.Screen name="Registros" component={ListaRegistrosScreen}
@@ -52,18 +62,25 @@ function Abas() {
 // O que faz: escolhe quais telas mostrar conforme o usuário esteja logado ou não
 function Rotas() {
   const { usuario, carregando } = useAuth();
+  const { cores } = useTema();
 
   // Enquanto confere se já existe login salvo, mostra uma rodinha de carregamento
   if (carregando) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        <ActivityIndicator size="large" />
+      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: cores.fundo }}>
+        <ActivityIndicator size="large" color={cores.primaria} />
       </View>
     );
   }
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: cores.cartao },
+        headerTintColor: cores.texto,
+        contentStyle: { backgroundColor: cores.fundo },
+      }}
+    >
       {usuario ? (
         <>
           <Stack.Screen name="Principal" component={Abas} options={{ headerShown: false }} />
@@ -85,15 +102,29 @@ function Rotas() {
   );
 }
 
+// O que faz: liga a navegação às cores do tema, para fundo, topo e barra de status combinarem
+function Navegacao() {
+  const { cores, escuro } = useTema();
+  const base = escuro ? DarkTheme : DefaultTheme;
+  const temaNavegacao = {
+    ...base,
+    colors: { ...base.colors, background: cores.fundo, card: cores.cartao, text: cores.texto, border: cores.borda, primary: cores.primaria },
+  };
+  return (
+    <NavigationContainer theme={temaNavegacao}>
+      <StatusBar barStyle={escuro ? 'light-content' : 'dark-content'} backgroundColor={cores.cartao} />
+      <Rotas />
+    </NavigationContainer>
+  );
+}
+
 // Componente raiz: os "providers" deixam tema e login disponíveis para todas as telas
 export default function App() {
   return (
     <SafeAreaProvider>
       <TemaProvider>
         <AuthProvider>
-          <NavigationContainer>
-            <Rotas />
-          </NavigationContainer>
+          <Navegacao />
         </AuthProvider>
       </TemaProvider>
     </SafeAreaProvider>

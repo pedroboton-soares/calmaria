@@ -1,4 +1,4 @@
-// Guarda o tema (claro ou escuro) e o tamanho da fonte do app, e salva a escolha no celular
+// Guarda o tema (claro ou escuro), o tamanho da fonte e se a planta aparece na Home, e salva as escolhas no celular
 // (AsyncStorage) para ela continuar valendo depois que o app for fechado.
 // Qualquer tela pode usar tudo isso chamando useTema().
 
@@ -8,31 +8,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Nomes sob os quais as escolhas ficam guardadas no celular
 const CHAVE_TEMA = 'calmaria_tema';
 const CHAVE_ESCALA = 'calmaria_escala';
+const CHAVE_PLANTA = 'calmaria_planta';
 
-// Cores do tema claro (mesmas da versão provisória do Pedro)
+// Cores do tema claro, na direção visual "Planta": verde de folha, fundo azul bem claro e vaso de barro
 const CORES_CLARO = {
-  fundo: '#F5F7FA',
+  fundo: '#E8F2F4',
   cartao: '#FFFFFF',
-  texto: '#1F2933',
-  textoSuave: '#52606D',
-  primaria: '#2F6F8F',
+  texto: '#14323A',
+  textoSuave: '#4A6670',
+  primaria: '#2F7D4F',
   textoSobrePrimaria: '#FFFFFF',
-  borda: '#CBD2D9',
-  erro: '#B00020',
-  sucesso: '#1B7F3B',
+  borda: '#C5D6DA',
+  erro: '#B3261E',
+  sucesso: '#2F7D4F',
+  folha: '#2F7D4F',
+  folhaClara: '#6DB37F',
+  vaso: '#B9774A',
+  terra: '#6B4A33',
 };
 
-// Cores do tema escuro (texto claro sobre fundo escuro, com bom contraste)
+// Cores do tema escuro: as mesmas ideias, mais claras sobre fundo escuro, com bom contraste
 const CORES_ESCURO = {
-  fundo: '#121A21',
-  cartao: '#1C2630',
-  texto: '#E8EDF2',
-  textoSuave: '#AAB7C4',
-  primaria: '#7FB8D6',
-  textoSobrePrimaria: '#0B1620',
-  borda: '#3A4856',
-  erro: '#FF8A80',
-  sucesso: '#6FCF97',
+  fundo: '#0F1E22',
+  cartao: '#17292E',
+  texto: '#E3EEF0',
+  textoSuave: '#A7BEC3',
+  primaria: '#7CC497',
+  textoSobrePrimaria: '#0F1E22',
+  borda: '#2C4349',
+  erro: '#F2B8B5',
+  sucesso: '#7CC497',
+  folha: '#7CC497',
+  folhaClara: '#4E9A68',
+  vaso: '#C98A5E',
+  terra: '#5A3A24',
 };
 
 // O "contexto" é uma caixa compartilhada: o Provider coloca os valores nela e as telas leem
@@ -51,6 +60,7 @@ async function guardar(chave, valor) {
 export function TemaProvider({ children }) {
   const [escuro, setEscuro] = useState(false); // false = tema claro
   const [escala, setEscala] = useState(1); // 1 = fonte normal
+  const [mostrarPlanta, setMostrarPlanta] = useState(true); // planta e sequência aparecem na Home
   const [carregado, setCarregado] = useState(false); // vira true depois de ler o que estava salvo
 
   // O que faz: quando o app abre, lê as escolhas salvas no celular (roda uma vez só)
@@ -59,15 +69,19 @@ export function TemaProvider({ children }) {
       try {
         const temaSalvo = await AsyncStorage.getItem(CHAVE_TEMA);
         const escalaSalva = Number(await AsyncStorage.getItem(CHAVE_ESCALA));
+        const plantaSalva = await AsyncStorage.getItem(CHAVE_PLANTA);
         if (temaSalvo === 'escuro') {
           setEscuro(true);
+        }
+        if (plantaSalva === 'nao') {
+          setMostrarPlanta(false);
         }
         // Só aceita valores que fazem sentido (entre 1 e 2), para um valor estranho não quebrar a tela
         if (escalaSalva >= 1 && escalaSalva <= 2) {
           setEscala(escalaSalva);
         }
       } catch (erro) {
-        // Se não conseguir ler, fica com o padrão: tema claro e fonte normal
+        // Se não conseguir ler, fica com o padrão: tema claro, fonte normal e planta visível
       } finally {
         setCarregado(true);
       }
@@ -91,6 +105,14 @@ export function TemaProvider({ children }) {
     await guardar(CHAVE_ESCALA, String(valor));
   }
 
+  // O que faz: mostra ou esconde a planta e a sequência na Home e salva a escolha.
+  // O guia TrackWell pede que a parte de "jogo" do app possa ser desligada (rec. 61, p. 28)
+  async function alternarPlanta() {
+    const novoValor = !mostrarPlanta;
+    setMostrarPlanta(novoValor);
+    await guardar(CHAVE_PLANTA, novoValor ? 'sim' : 'nao');
+  }
+
   // O que faz: devolve o tamanho de fonte já multiplicado pela escala escolhida
   function tamanho(base) {
     return base * escala;
@@ -108,6 +130,8 @@ export function TemaProvider({ children }) {
     escala,
     mudarEscala,
     tamanho,
+    mostrarPlanta,
+    alternarPlanta,
   };
 
   return <TemaContext.Provider value={valor}>{children}</TemaContext.Provider>;

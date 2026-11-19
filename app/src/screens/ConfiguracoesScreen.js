@@ -1,4 +1,4 @@
-// Tela de Ajustes. Tem três partes: personalização (tema claro ou escuro), acessibilidade
+// Tela de Ajustes. Tem três partes: personalização (tema claro ou escuro e planta), acessibilidade
 // (tamanho da fonte) e links para a conta e para a política de privacidade.
 // As escolhas de tema e de fonte são salvas no celular pelo TemaContext.
 
@@ -50,7 +50,8 @@ function OpcaoTamanho({ nivel, selecionado, aoEscolher }) {
 
 // O que faz: mostra a tela de Ajustes
 export default function ConfiguracoesScreen({ navigation }) {
-  const { cores, escuro, alternarTema, escala, mudarEscala, tamanho } = useTema();
+  const { cores, escuro, alternarTema, escala, mudarEscala, tamanho, mostrarPlanta, alternarPlanta } =
+    useTema();
 
   return (
     // ScrollView: a tela rola se não couber (fonte grande ou celular deitado)
@@ -87,6 +88,34 @@ export default function ConfiguracoesScreen({ navigation }) {
             <View pointerEvents="none">
               <Switch
                 value={escuro}
+                trackColor={{ false: cores.borda, true: cores.primaria }}
+                thumbColor={cores.cartao}
+              />
+            </View>
+          </TouchableOpacity>
+        </Cartao>
+        <Cartao>
+          {/* A planta é o lado de "jogo" do app; o guia TrackWell pede que ela possa ser desligada */}
+          <TouchableOpacity
+            onPress={alternarPlanta}
+            accessibilityRole="switch"
+            accessibilityLabel="Mostrar planta e sequência"
+            accessibilityHint="Mostra ou esconde a planta e a contagem de dias seguidos na tela inicial"
+            accessibilityState={{ checked: mostrarPlanta }}
+            style={estilos.linhaTema}
+          >
+            <View style={estilos.textosTema}>
+              <Text style={{ color: cores.texto, fontSize: tamanho(16), fontWeight: 'bold' }}>
+                Mostrar planta e sequência
+              </Text>
+              <Text style={{ color: cores.textoSuave, fontSize: tamanho(14) }}>
+                {mostrarPlanta ? 'Ativado' : 'Desativado'}. A planta ganha uma folha por dia seguido com
+                registro. Se preferir sem contagem, é só desligar.
+              </Text>
+            </View>
+            <View pointerEvents="none">
+              <Switch
+                value={mostrarPlanta}
                 trackColor={{ false: cores.borda, true: cores.primaria }}
                 thumbColor={cores.cartao}
               />
