@@ -43,3 +43,9 @@ export function lerDataBR(texto) {
   }
   return paraTexto(data);
 }
+
+// O que faz: devolve a data de N dias atrás em AAAA-MM-DD (0 = hoje)
+export function diasAtras(quantidade) {
+  const agora = new Date();
+  return paraTexto(new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - quantidade));
+}
