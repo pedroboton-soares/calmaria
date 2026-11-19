@@ -10,3 +10,6 @@ node_modules/
 # Arquivos gerados pelo sistema
 dist/
 .DS_Store
+
+# Material de referência (PDF do guia), fica só na máquina de cada um
+referencias/

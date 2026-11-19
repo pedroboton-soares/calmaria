@@ -32,10 +32,16 @@ App de saúde mental: diário de humor (nota 1 a 5, texto e data) com IA de apoi
 
 ## Contrato entre os membros (não renomear sem avisar)
 
-- Rotas da API do app: `POST /auth/cadastro`, `POST /auth/login`, `GET /usuarios/me`, `DELETE /usuarios/me/dados`, `DELETE /usuarios/me`, CRUD em `/registros`, `GET /relatorio`.
-- Arquivos compartilhados do app: `src/services/api.js` (`chamarApi`, `obterToken`, `salvarToken`, `apagarToken`, `registrarAoExpirar`), `src/context/AuthContext.js` (`useAuth()`), `src/context/TemaContext.js` (`useTema()` devolve `{cores, escuro, alternarTema, escala, mudarEscala, tamanho}`), `src/components/Botao.js`, `CampoTexto.js`, `Cartao.js`, `src/utils/humor.js`, `src/config.js`.
-- Nomes das telas: Login, Cadastro, Consentimento, Principal (abas: Inicio, Registros, Ajustes), FormRegistro, Reflexao, ResumoSemana, Relatorio, Politica, Conta.
+- Rotas da API do app: `POST /auth/cadastro`, `POST /auth/login`, `GET /usuarios/me`, `DELETE /usuarios/me/dados`, `DELETE /usuarios/me`, CRUD em `/registros`, `GET /relatorio/pdf?inicio=&fim=`.
+- Arquivos compartilhados do app: `src/services/api.js` (`chamarApi`, `obterToken`, `salvarToken`, `apagarToken`, `registrarAoExpirar`), `src/context/AuthContext.js` (`useAuth()`), `src/context/TemaContext.js` (`useTema()` devolve `{cores, escuro, alternarTema, escala, mudarEscala, tamanho, mostrarPlanta, alternarPlanta}`), `src/components/Botao.js`, `CampoTexto.js`, `Cartao.js`, `src/utils/humor.js`, `src/config.js`.
+- Nomes das telas: Login, Cadastro, Consentimento, Principal (abas: Inicio, Registros, Relatorio, Ajustes), FormRegistro, Reflexao, ResumoSemana, Relatorio, Politica, Conta.
 - Cores e tamanhos de fonte vêm sempre de `useTema()`. Nunca escrever cor fixa dentro de uma tela.
+
+## Guia Trackwell (referência de design e IHC)
+
+- Fica em `referencias/Guia-TrackWell.pdf` (pasta fora do Git, ver `.gitignore`).
+- Consultar antes de criar ou mudar qualquer tela. No que for funcional (usabilidade, acessibilidade, linguagem, segurança) o guia vence; no que for estético vale a direção Planta.
+- Na tabela de IHC do README, citar o critério e a página do guia. Não inventar critério.
 
 ## Direção visual: "Planta" (F)
 
@@ -45,6 +51,8 @@ Uma planta que ganha uma folha por dia de sequência de registros. Tom acolhedor
 - Fonte: Albert Sans (opcional; precisa copiar os arquivos de fonte para o app e linkar. Se complicar, usar a fonte do sistema).
 - A planta é desenhada com `react-native-svg` (componente `Planta` recebendo o número de folhas).
 - Mensagens motivadoras ao registrar, exemplo: "Uma folha nova hoje. Amanhã tem mais um pouco de cuidado esperando por você."
+- A planta e a sequência são opcionais (guia, rec. 61, p. 28): interruptor "Mostrar planta e sequência" em Ajustes. A planta nunca murcha.
+- Em humor 1 ou 2 a mensagem acolhe em vez de comemorar (guia, rec. 28 e 76).
 - Botões com altura mínima 48, contraste bom, `accessibilityLabel` nos botões só de ícone.
 
 ## Sequência de registros (inovação do trabalho)
