@@ -14,27 +14,23 @@ import {
 import { useTema } from '../context/TemaContext';
 import { chamarApi } from '../services/api';
 import { HUMORES } from '../utils/humor';
+import { dataDeHoje, formatarDataBR, lerDataBR } from '../utils/datas';
 import Botao from '../components/Botao';
 import CampoTexto from '../components/CampoTexto';
 
 const LIMITE_TEXTO = 1000;
 
-// O que faz: devolve a data de hoje no formato AAAA-MM-DD, usando o horário do celular
-function dataDeHoje() {
-  const agora = new Date();
-  const mes = String(agora.getMonth() + 1).padStart(2, '0');
-  const dia = String(agora.getDate()).padStart(2, '0');
-  // Não uso toISOString() porque ele usa horário UTC e à noite mostraria o dia seguinte
-  return agora.getFullYear() + '-' + mes + '-' + dia;
-}
-
-// O que faz: confere os campos antes de enviar; devolve a mensagem de erro ou '' se estiver tudo certo
-function validar(humor, texto, data) {
+// O que faz: confere os campos antes de enviar; devolve a mensagem de erro ou '' se estiver tudo certo.
+// dataApi é a data já convertida para AAAA-MM-DD (ou null se a pessoa digitou uma data que não existe)
+function validar(humor, texto, dataApi) {
   if (humor === null) {
     return 'Escolha como você está se sentindo.';
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
-    return 'Escreva a data no formato AAAA-MM-DD, por exemplo 2026-11-05.';
+  if (!dataApi) {
+    return 'Confira a data. Escreva no formato DD/MM/AAAA, por exemplo 05/11/2026.';
+  }
+  if (dataApi > dataDeHoje()) {
+    return 'A data não pode ser depois de hoje.';
   }
   if (texto.length > LIMITE_TEXTO) {
     return 'O texto pode ter no máximo ' + LIMITE_TEXTO + ' caracteres.';
@@ -51,7 +47,8 @@ export default function FormRegistroScreen({ navigation, route }) {
 
   const [humor, setHumor] = useState(editando ? registro.humor : null);
   const [texto, setTexto] = useState(editando ? registro.texto || '' : '');
-  const [data, setData] = useState(editando ? registro.data : dataDeHoje());
+  // A data aparece como DD/MM/AAAA na tela e só é convertida para AAAA-MM-DD na hora de salvar
+  const [data, setData] = useState(formatarDataBR(editando ? registro.data : dataDeHoje()));
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
@@ -60,9 +57,11 @@ export default function FormRegistroScreen({ navigation, route }) {
     navigation.setOptions({ title: editando ? 'Editar registro' : 'Novo registro' });
   }, [navigation, editando]);
 
-  // O que faz: valida, envia para a API (POST se for novo, PUT se for edição) e volta para a tela anterior
+  // O que faz: valida e envia para a API (POST se for novo, PUT se for edição).
+  // Registro novo volta para a Início, que mostra a mensagem da planta; edição volta para a tela anterior
   async function salvarRegistro() {
-    const mensagem = validar(humor, texto, data);
+    const dataApi = lerDataBR(data);
+    const mensagem = validar(humor, texto, dataApi);
     if (mensagem) {
       setErro(mensagem);
       return;
@@ -73,9 +72,14 @@ export default function FormRegistroScreen({ navigation, route }) {
       const caminho = editando ? '/registros/' + registro.id : '/registros';
       await chamarApi(caminho, {
         method: editando ? 'PUT' : 'POST',
-        body: { humor, texto, data },
+        body: { humor, texto, data: dataApi },
       });
-      navigation.goBack();
+      if (editando) {
+        navigation.goBack();
+      } else {
+        // popTo volta até o Principal que já está na pilha e abre a aba Início com os parâmetros
+        navigation.popTo('Principal', { screen: 'Inicio', params: { registroSalvo: true, humor } });
+      }
     } catch (e) {
       setErro(e.message); // mostra a mensagem que veio da API
       setSalvando(false); // libera o botão para tentar de novo
@@ -126,10 +130,12 @@ export default function FormRegistroScreen({ navigation, route }) {
         </View>
 
         <CampoTexto
-          rotulo="Como foi o seu dia? (opcional)"
+          rotulo="Quer contar um pouco mais? (opcional)"
           valor={texto}
           onChangeText={setTexto}
           multiline
+          maxLength={LIMITE_TEXTO}
+          placeholder="Se quiser, conte como está se sentindo hoje..."
           accessibilityLabel="Texto do registro"
         />
         <Text style={{ color: cores.textoSuave, fontSize: tamanho(12), marginBottom: 12 }}>
@@ -137,10 +143,12 @@ export default function FormRegistroScreen({ navigation, route }) {
         </Text>
 
         <CampoTexto
-          rotulo="Data (AAAA-MM-DD)"
+          rotulo="Data (DD/MM/AAAA)"
           valor={data}
           onChangeText={setData}
-          accessibilityLabel="Data do registro"
+          keyboardType="numbers-and-punctuation"
+          maxLength={10}
+          accessibilityLabel="Data do registro, no formato dia, mês e ano"
         />
 
         {erro !== '' && (
