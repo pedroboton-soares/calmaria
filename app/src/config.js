@@ -8,4 +8,4 @@
 export const API_URL = 'http://10.0.2.2:3000';
 
 // API de IA (publicada no Render pelo Jardel). O app só conversa com a IA por aqui.
-export const IA_URL = 'https://nome-do-servico.onrender.com';
+export const IA_URL = 'https://calmaria.onrender.com';
