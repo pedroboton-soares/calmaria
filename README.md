@@ -2,7 +2,7 @@
 
 Diário de humor com IA de apoio. Trabalho Final de Desenvolvimento de Aplicações para Dispositivos Móveis (UFPR, prof. Anderson da Silva Marcolino), domínio Saúde Mental.
 
-**Equipe:** [Pedro, nome completo], [Yudi, nome completo], [Jardel, nome completo].
+**Equipe:** Pedro Arthur, Yudi Doi, Jardel Ferreira.
 
 **Repositório:** https://github.com/pedroboton-soares/calmaria
 
@@ -339,9 +339,9 @@ Em Ajustes: **tema claro ou escuro** e **mostrar ou esconder a planta e a sequê
 
 | Item | Valor |
 |---|---|
-| Endereço da API de IA | [preencher: https://....onrender.com] (teste: `GET /saude`) |
+| Endereço da API de IA | https://calmaria.onrender.com (teste: https://calmaria.onrender.com/saude) |
 | Serviço de IA | Google Gemini (API `generateContent`) |
-| Modelo | [preencher: valor de `GEMINI_MODEL` no Render] |
+| Modelo | `gemini-2.6-flash` (variável `GEMINI_MODEL` no Render) |
 | Hospedagem | Render (plano gratuito), Root Directory `api-ia` |
 | Rotas | `POST /reflexao` `{ humor, texto }` e `POST /resumo-semana` `{ registros: [{ data, humor, texto }] }` |
 
@@ -404,7 +404,7 @@ Os resumos foram escritos com as palavras do grupo e não têm dados pessoais. E
 
 ### Contribuição da IA generativa
 
-- **Geração de ideias:** [preencher pela equipe: qual IA foi usada, o que foi perguntado e quais ideias surgiram, quais foram escolhidas e quais foram descartadas e por quê. Exemplo de formato: "Pedimos ao ... uma lista de padrões de apps de humor e alternativas ao streak punitivo; das N direções visuais sugeridas escolhemos a F, Planta, porque ..."]
+- **Geração de ideias:** pedimos ao Claude uma lista de padrões de apps de humor e alternativas ao streak punitivo. Das seis direções visuais sugeridas (de A a F), escolhemos a F, Planta, porque queríamos algo que se diferenciasse do padrão.
 - **Análise crítica:** a IA cruzou a ideia com o Guia TrackWell e apontou dois ajustes que adotamos: a gamificação precisava ser desativável (rec. 61) e a mensagem não podia comemorar dias ruins (rec. 28 e 76).
 - **Desenvolvimento:** parte do código foi escrita com ajuda do Claude Code (os commits com essa ajuda têm a linha `Co-Authored-By: Claude`). Todo o código foi revisado pela equipe, e cada membro explica a sua parte.
 
@@ -414,6 +414,6 @@ Os resumos foram escritos com as palavras do grupo e não têm dados pessoais. E
 
 | Membro | Telas | Código do aplicativo (React Native) | Código das APIs, do banco de dados ou da IAGen | Itens do documento |
 |---|---|---|---|---|
-| [Pedro, nome completo] | Login, Cadastro, Consentimento, Política de privacidade, Minha conta | `App.js` (navegação), `context/AuthContext.js`, `services/api.js` | `api-app`: `server.js`, `db.js`, `schema.sql`, `middleware/auth.js`, `routes/auth.js`, `routes/usuarios.js` | 4, 5, 7 e 11 |
-| [Yudi, nome completo] | FormRegistro (novo e editar), Registros, Relatório | `utils/humor.js`, `utils/datas.js` | `api-app`: `routes/registros.js`, `routes/relatorio.js` (PDF) | 1, 2, 3 e 6 |
-| [Jardel, nome completo] | Início, Reflexão com IA, Resumo da semana, Ajustes | `context/TemaContext.js`, componentes (`Botao`, `CampoTexto`, `Cartao`, `Planta`, `AvisoIA`), `utils/sequencia.js`, `utils/mensagens.js`, `services/ia.js` | `api-ia` completa e `materiais-ia/` | 8, 9 e 10 |
+| Pedro Arthur | Login, Cadastro, Consentimento, Política de privacidade, Minha conta | `App.js` (navegação), `context/AuthContext.js`, `services/api.js` | `api-app`: `server.js`, `db.js`, `schema.sql`, `middleware/auth.js`, `routes/auth.js`, `routes/usuarios.js` | 4, 5, 7 e 11 |
+| Yudi Doi | FormRegistro (novo e editar), Registros, Relatório | `utils/humor.js`, `utils/datas.js` | `api-app`: `routes/registros.js`, `routes/relatorio.js` (PDF) | 1, 2, 3 e 6 |
+| Jardel Ferreira | Início, Reflexão com IA, Resumo da semana, Ajustes | `context/TemaContext.js`, componentes (`Botao`, `CampoTexto`, `Cartao`, `Planta`, `AvisoIA`), `utils/sequencia.js`, `utils/mensagens.js`, `services/ia.js` | `api-ia` completa e `materiais-ia/` | 8, 9 e 10 |
