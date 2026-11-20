@@ -107,7 +107,7 @@ export default function ListaRegistrosScreen({ navigation }) {
           <View style={estilos.botao}>
             <Botao
               titulo="Excluir"
-              tipo="perigo"
+              tipo="perigoContorno"
               accessibilityLabel={'Excluir registro de ' + formatarDataBR(item.data)}
               onPress={() => confirmarExclusao(item)}
             />
@@ -173,5 +173,5 @@ const estilos = StyleSheet.create({
   centro: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   // flexWrap: se a fonte estiver grande, os botões descem para a linha de baixo
   botoes: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
-  botao: { flexGrow: 1, minWidth: 100 },
+  botao: { flexGrow: 1, minWidth: 90 },
 });

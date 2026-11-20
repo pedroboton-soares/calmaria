@@ -1,4 +1,4 @@
-// Botão do app, com 3 tipos (primario, secundario e perigo). Usa as cores e o tamanho de fonte do tema
+// Botão do app, com 4 tipos (primario, secundario, perigo e perigoContorno). Usa as cores e o tamanho de fonte do tema
 // e tem área de toque de pelo menos 48 de altura, para ser fácil de tocar.
 
 import React from 'react';
@@ -27,6 +27,12 @@ export default function Botao({
   }
   if (tipo === 'perigo') {
     fundo = cores.erro;
+    borda = cores.erro;
+  }
+  // Ação de apagar que não é a principal da tela: vermelho só na borda e no texto, para não chamar mais atenção
+  if (tipo === 'perigoContorno') {
+    fundo = cores.cartao;
+    letra = cores.erro;
     borda = cores.erro;
   }
 

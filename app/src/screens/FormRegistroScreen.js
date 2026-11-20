@@ -176,9 +176,12 @@ const estilos = StyleSheet.create({
   conteudo: { padding: 16 },
   rotulo: { fontWeight: 'bold', marginBottom: 8 },
   linhaHumores: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 16 },
+  // flexBasis 0 + flexGrow 1: as 5 opções dividem a linha em partes iguais (escala horizontal, guia rec. 88).
+  // Só descem para outra linha se a fonte estiver muito grande e não couberem
   botaoHumor: {
     minHeight: 72,
-    minWidth: 64,
+    minWidth: 58,
+    flexBasis: 0,
     flexGrow: 1,
     margin: 4,
     padding: 6,
