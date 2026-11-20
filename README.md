@@ -148,14 +148,17 @@ cd calmaria
 
 ### 4.3 Colocar os arquivos do ZIP
 
-O ZIP entregue na UFPR Virtual tem esta estrutura. Copie cada arquivo para a mesma pasta dentro do repositório:
+O ZIP entregue na UFPR Virtual tem estes arquivos:
 
 | Arquivo no ZIP | Onde colocar | Para que serve |
 |---|---|---|
 | `api-app/.env` | `calmaria/api-app/.env` | Porta e `JWT_SECRET` (segredo que assina o token) |
-| `api-ia/.env` | `calmaria/api-ia/.env` | Porta, `GEMINI_API_KEY` e `GEMINI_MODEL` (só para rodar a IA localmente; o app usa a IA publicada no Render) |
+| `app-release.apk` | Arrastar para a janela do emulador | APK pronto do app (item 5), para testar sem compilar |
+| `COMO-EXECUTAR.txt` | Não precisa copiar | Passo a passo curto para rodar o projeto |
 
-Sem o ZIP, dá para criar os arquivos a partir dos modelos `api-app/.env.example` e `api-ia/.env.example`. **O `JWT_SECRET` não pode ficar vazio**, senão o login responde erro 500. Para gerar um valor:
+O `api-ia/.env` (porta, `GEMINI_API_KEY` e `GEMINI_MODEL`) não vai no ZIP: o app usa a IA publicada no Render (item 9), e a chave do Gemini fica só nas variáveis de ambiente de lá. Para rodar a IA localmente, crie o arquivo a partir de `api-ia/.env.example` com uma chave sua.
+
+Sem o ZIP, dá para criar o `api-app/.env` a partir do modelo `api-app/.env.example`. **O `JWT_SECRET` não pode ficar vazio**, senão o login responde erro 500. Para gerar um valor:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"

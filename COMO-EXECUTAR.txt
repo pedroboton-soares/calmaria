@@ -34,8 +34,8 @@ Copie o arquivo api-app/.env que veio no ZIP para a pasta calmaria/api-app/
 Sem o ZIP: copie api-app/.env.example para api-app/.env e troque o valor
 de JWT_SECRET por qualquer texto longo. Ele não pode ficar vazio.
 
-O api-ia/.env do ZIP só é necessário para rodar a IA localmente, o que é
-opcional: o app já usa a IA publicada no Render.
+Não é preciso nenhum .env para a IA: o app já usa a IA publicada no Render,
+e a chave do Gemini fica guardada só lá.
 
 
 =====================================================================
