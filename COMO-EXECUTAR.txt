@@ -1,0 +1,118 @@
+CALMARIA: COMO EXECUTAR
+Trabalho Final de Desenvolvimento de Aplicações para Dispositivos Móveis (UFPR)
+Equipe: Pedro Arthur, Yudi Doi, Jardel Ferreira
+
+O app tem três partes:
+  1. API do app (pasta api-app): roda no seu computador, porta 3000. Guarda contas e registros.
+  2. API de IA (pasta api-ia): já está publicada em https://calmaria.onrender.com. Não precisa rodar.
+  3. Aplicativo Android (pasta app): roda no emulador do Android Studio.
+
+Detalhes completos estão no README.md (itens 4 e 5).
+
+
+=====================================================================
+1. PROGRAMAS NECESSÁRIOS
+=====================================================================
+
+  - Node.js 22.13 ou mais novo (recomendado o 24 LTS): https://nodejs.org
+  - Android Studio com um emulador criado (Device Manager): https://developer.android.com/studio
+  - Git (só para copiar o repositório): https://git-scm.com
+
+Para conferir o Node, abra um terminal e digite:  node -v
+
+
+=====================================================================
+2. COPIAR O PROJETO E COLOCAR O .env
+=====================================================================
+
+  git clone https://github.com/pedroboton-soares/calmaria.git
+  cd calmaria
+
+Copie o arquivo api-app/.env que veio no ZIP para a pasta calmaria/api-app/
+(o arquivo se chama ".env", com ponto no começo e sem extensão).
+
+Sem o ZIP: copie api-app/.env.example para api-app/.env e troque o valor
+de JWT_SECRET por qualquer texto longo. Ele não pode ficar vazio.
+
+O api-ia/.env do ZIP só é necessário para rodar a IA localmente, o que é
+opcional: o app já usa a IA publicada no Render.
+
+
+=====================================================================
+3. LIGAR A API DO APP (obrigatório, deixe o terminal aberto)
+=====================================================================
+
+  cd api-app
+  npm install
+  npm start
+
+Deve aparecer: "API do app rodando na porta 3000".
+Teste no navegador: http://localhost:3000/saude  ->  {"ok":true}
+
+O banco de dados (api-app/calmaria.db) é criado sozinho na primeira vez.
+
+
+=====================================================================
+4. ABRIR O APLICATIVO (escolha A ou B)
+=====================================================================
+
+Antes de tudo, abra o emulador pelo Android Studio
+(Device Manager, botão Play) e espere ele terminar de ligar.
+
+--- A) Pelo APK pronto (mais simples) ---
+
+Arraste o arquivo app-release.apk (que veio no ZIP) para a janela do
+emulador. Ele instala sozinho. Depois abra o app "Calmaria".
+
+Se preferir gerar o APK você mesmo (Windows, PowerShell):
+  cd app\android
+  .\gradlew.bat assembleRelease
+O arquivo fica em app\android\app\build\outputs\apk\release\app-release.apk
+
+--- B) Pelo código (modo de desenvolvimento) ---
+
+Terminal novo:
+  cd app
+  npm install
+  npm start
+
+Outro terminal, também na pasta app:
+  npm run android
+
+A primeira compilação demora alguns minutos.
+
+
+=====================================================================
+5. USANDO O APP
+=====================================================================
+
+  1. Toque em "Criar conta", preencha os dados e aceite o consentimento.
+  2. Na aba Início, toque em "Registrar como estou", escolha o humor e salve.
+  3. Na aba Registros: "Editar", "Excluir" e "Refletir com IA" em cada registro.
+  4. Na Início também tem o "Resumo da semana com IA".
+  5. Na aba Relatório escolha o período e toque em "Gerar e abrir o PDF".
+  6. Em Ajustes: tema escuro, tamanho do texto, mostrar ou esconder a planta.
+
+Use dados fictícios nos testes.
+
+
+=====================================================================
+6. SE ALGO DER ERRADO
+=====================================================================
+
+  - "Não foi possível conectar ao servidor." no app: a API do app (passo 3) não está
+    rodando, ou está em outra porta. Ela precisa ficar aberta na porta 3000.
+
+  - Erro ao entrar ou criar conta (erro 500): falta o JWT_SECRET no
+    arquivo api-app/.env (passo 2).
+
+  - A IA demora na primeira vez: o plano gratuito do Render "dorme" quando
+    fica sem uso. O primeiro pedido pode levar até 1 minuto. Depois fica rápido.
+    Para conferir se ela está no ar: https://calmaria.onrender.com/saude
+
+  - "npm" ou "node" não é reconhecido: instale o Node.js e abra um terminal novo.
+
+  - Celular de verdade em vez de emulador: troque API_URL em
+    app/src/config.js pelo IP do computador na rede (ex.: http://192.168.0.10:3000),
+    acrescente esse IP em app/android/app/src/main/res/xml/network_security_config.xml
+    e use a opção B do passo 4.

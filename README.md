@@ -130,6 +130,8 @@ api-app/src/
 
 ## 4. Execução em ambiente de desenvolvimento
 
+Versão curta, passo a passo, em `COMO-EXECUTAR.txt` na raiz do repositório.
+
 ### 4.1 Programas a instalar
 
 1. **Git**: https://git-scm.com
