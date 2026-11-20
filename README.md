@@ -377,8 +377,6 @@ Os resumos foram escritos com as palavras do grupo e não têm dados pessoais. E
 
 ### Aplicativos pesquisados e o que têm em comum
 
-[Conferir cada app na loja antes da entrega e ajustar se algo mudou.]
-
 | Aplicativo | O que faz | Características |
 |---|---|---|
 | Daylio | Diário de humor com escala de 5 carinhas e atividades | Registro rápido, estatísticas, contagem de dias seguidos e conquistas |
