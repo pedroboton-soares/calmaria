@@ -1,6 +1,6 @@
 CALMARIA: COMO EXECUTAR
 Trabalho Final de Desenvolvimento de Aplicações para Dispositivos Móveis (UFPR)
-Equipe: Pedro Arthur, Yudi Doi, Jardel Ferreira
+Equipe: Pedro Arthur Boton Soares, Yudi Vinicios Ribeiro Doi, Jardel Vieira Dantas de Jesus Ferreira
 
 O app tem três partes:
   1. API do app (pasta api-app): roda no seu computador, porta 3000. Guarda contas e registros.

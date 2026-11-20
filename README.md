@@ -2,7 +2,7 @@
 
 Diário de humor com IA de apoio. Trabalho Final de Desenvolvimento de Aplicações para Dispositivos Móveis (UFPR, prof. Anderson da Silva Marcolino), domínio Saúde Mental.
 
-**Equipe:** Pedro Arthur, Yudi Doi, Jardel Ferreira.
+**Equipe:** Pedro Arthur Boton Soares, Yudi Vinicios Ribeiro Doi, Jardel Vieira Dantas de Jesus Ferreira.
 
 **Repositório:** https://github.com/pedroboton-soares/calmaria
 
@@ -346,7 +346,7 @@ Em Ajustes: **tema claro ou escuro** e **mostrar ou esconder a planta e a sequê
 |---|---|
 | Endereço da API de IA | https://calmaria.onrender.com (teste: https://calmaria.onrender.com/saude) |
 | Serviço de IA | Google Gemini (API `generateContent`) |
-| Modelo | `gemini-2.6-flash` (variável `GEMINI_MODEL` no Render) |
+| Modelo | `gemini-3.5-flash` (variável `GEMINI_MODEL` no Render) |
 | Hospedagem | Render (plano gratuito), Root Directory `api-ia` |
 | Rotas | `POST /reflexao` `{ humor, texto }` e `POST /resumo-semana` `{ registros: [{ data, humor, texto }] }` |
 
@@ -417,6 +417,6 @@ Os resumos foram escritos com as palavras do grupo e não têm dados pessoais. E
 
 | Membro | Telas | Código do aplicativo (React Native) | Código das APIs, do banco de dados ou da IAGen | Itens do documento |
 |---|---|---|---|---|
-| Pedro Arthur | Login, Cadastro, Consentimento, Política de privacidade, Minha conta | `App.js` (navegação), `context/AuthContext.js`, `services/api.js` | `api-app`: `server.js`, `db.js`, `schema.sql`, `middleware/auth.js`, `routes/auth.js`, `routes/usuarios.js` | 4, 5, 7 e 11 |
-| Yudi Doi | FormRegistro (novo e editar), Registros, Relatório | `utils/humor.js`, `utils/datas.js` | `api-app`: `routes/registros.js`, `routes/relatorio.js` (PDF) | 1, 2, 3 e 6 |
-| Jardel Ferreira | Início, Reflexão com IA, Resumo da semana, Ajustes | `context/TemaContext.js`, componentes (`Botao`, `CampoTexto`, `Cartao`, `Planta`, `AvisoIA`), `utils/sequencia.js`, `utils/mensagens.js`, `services/ia.js` | `api-ia` completa e `materiais-ia/` | 8, 9 e 10 |
+| Pedro Arthur Boton Soares | Login, Cadastro, Consentimento, Política de privacidade, Minha conta | `App.js` (navegação), `context/AuthContext.js`, `services/api.js` | `api-app`: `server.js`, `db.js`, `schema.sql`, `middleware/auth.js`, `routes/auth.js`, `routes/usuarios.js` | 4, 5, 7 e 11 |
+| Yudi Vinicios Ribeiro Doi | FormRegistro (novo e editar), Registros, Relatório | `utils/humor.js`, `utils/datas.js` | `api-app`: `routes/registros.js`, `routes/relatorio.js` (PDF) | 1, 2, 3 e 6 |
+| Jardel Vieira Dantas de Jesus Ferreira | Início, Reflexão com IA, Resumo da semana, Ajustes | `context/TemaContext.js`, componentes (`Botao`, `CampoTexto`, `Cartao`, `Planta`, `AvisoIA`), `utils/sequencia.js`, `utils/mensagens.js`, `services/ia.js` | `api-ia` completa e `materiais-ia/` | 8, 9 e 10 |
