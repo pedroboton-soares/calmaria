@@ -31,6 +31,9 @@ export default function Planta({ folhas = 0, tamanhoTela = 180 }) {
   // Topo do caule: sobe conforme a quantidade de folhas (um brotinho quando é zero)
   const topo = BASE - 22 - quantidade * ESPACO;
   const temFlor = folhas >= 7;
+  // O desenho só ocupa a altura que a planta tem: corta o espaço vazio acima do topo do caule
+  const cortarEmCima = Math.max(0, Math.min(topo - 40, 110));
+  const alturaDesenho = 240 - cortarEmCima;
 
   // Uma folha por dia, alternando os lados. A mais nova (a de cima) fica com a cor mais clara
   const listaFolhas = [];
@@ -50,7 +53,11 @@ export default function Planta({ folhas = 0, tamanhoTela = 180 }) {
 
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={descricao} style={{ alignItems: 'center' }}>
-      <Svg width={tamanhoTela} height={tamanhoTela * 1.2} viewBox="0 0 200 240">
+      <Svg
+        width={tamanhoTela}
+        height={(tamanhoTela * alturaDesenho) / 200}
+        viewBox={'0 ' + cortarEmCima + ' 200 ' + alturaDesenho}
+      >
         {/* Caule */}
         <Path d={`M100 ${BASE} L100 ${topo}`} stroke={cores.folha} strokeWidth={5} strokeLinecap="round" />
         {listaFolhas}

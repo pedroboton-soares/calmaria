@@ -122,9 +122,9 @@ export default function HomeScreen({ navigation, route }) {
                   {mensagemDaSequencia(atual, registrouHoje)}
                 </Text>
                 <View style={estilos.numeros}>
-                  <Numero valor={atual} rotulo="dias seguidos" />
+                  <Numero valor={atual} rotulo={atual === 1 ? 'dia seguido' : 'dias seguidos'} />
                   <Numero valor={melhor} rotulo="melhor sequência" />
-                  <Numero valor={diasNoMes} rotulo="dias neste mês" />
+                  <Numero valor={diasNoMes} rotulo={diasNoMes === 1 ? 'dia neste mês' : 'dias neste mês'} />
                 </View>
               </Cartao>
             ) : null}
