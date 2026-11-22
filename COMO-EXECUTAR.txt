@@ -28,13 +28,17 @@ Para conferir o Node, abra um terminal e digite:  node -v
   git clone https://github.com/pedroboton-soares/calmaria.git
   cd calmaria
 
-Copie o arquivo api-app/.env que veio no ZIP para a pasta calmaria/api-app/
-(o arquivo se chama ".env", com ponto no começo e sem extensão).
+A entrega veio em dois ZIPs, por causa do limite de 20 MB do site:
+  - calmaria-arquivos.zip: este manual e os arquivos .env (api-app e api-ia).
+  - calmaria-apk.zip: o app-release.apk (usado no passo 4, opção A).
+
+Copie o arquivo api-app/.env que veio no calmaria-arquivos.zip para a pasta
+calmaria/api-app/ (o arquivo se chama ".env", com ponto no começo e sem extensão).
 
 Sem o ZIP: copie api-app/.env.example para api-app/.env e troque o valor
 de JWT_SECRET por qualquer texto longo. Ele não pode ficar vazio.
 
-O ZIP também traz o api-ia/.env (chave do Gemini). Ele é opcional: o app
+O calmaria-arquivos.zip também traz o api-ia/.env (chave do Gemini). Ele é opcional: o app
 já usa a IA publicada no Render. Só é necessário para rodar a IA no próprio
 computador (README, item 4.5). Nesse caso, copie para calmaria/api-ia/.
 
@@ -62,8 +66,12 @@ Antes de tudo, abra o emulador pelo Android Studio
 
 --- A) Pelo APK pronto (mais simples) ---
 
-Arraste o arquivo app-release.apk (que veio no ZIP) para a janela do
-emulador. Ele instala sozinho. Depois abra o app "Calmaria".
+Arraste o arquivo app-release.apk (que veio no calmaria-apk.zip) para a
+janela do emulador. Ele instala sozinho. Depois abra o app "Calmaria".
+
+Para caber no limite de upload, esse APK foi gerado só para emuladores
+x86_64 (o padrão do Android Studio no Windows). Se não instalar, gere o
+APK completo ou use a opção B.
 
 Se preferir gerar o APK você mesmo (Windows, PowerShell):
   cd app\android
